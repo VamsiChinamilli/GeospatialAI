@@ -85,6 +85,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+     "https://geospatial-ai-alpha.vercel.app",
 ]
 
 # Ensure credentials, tokens, or session requests can pass cleanly if needed
