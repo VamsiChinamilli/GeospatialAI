@@ -35,7 +35,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
+    "localhost,127.0.0.1,geospatialai.onrender.com"
 ).split(",")
 
 if not DEBUG:
@@ -91,6 +91,11 @@ CORS_ALLOWED_ORIGINS = [
 
 # Ensure credentials, tokens, or session requests can pass cleanly if needed
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://geospatialai.onrender.com",
+    "https://geospatial-ai-alpha.vercel.app",
+]
 
 ROOT_URLCONF = 'core.urls'
 
