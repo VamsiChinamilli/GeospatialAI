@@ -26,7 +26,7 @@ This provider does NOT:
 from datetime import datetime, timedelta
 from io import BytesIO
 from typing import Optional
-
+import os
 import ee
 import numpy as np
 import requests
@@ -88,15 +88,37 @@ class EarthEngineProvider:
 
         try:
 
-            ee.Initialize(
-                project=cls.PROJECT_ID
+            service_account = os.getenv("GEE_SERVICE_ACCOUNT")
+            private_key = os.getenv("GEE_PRIVATE_KEY")
+
+        # ---------------------------------------------------
+        # Production: Render service account
+        # ---------------------------------------------------
+
+            if service_account and private_key:
+
+                credentials = ee.ServiceAccountCredentials(
+                service_account,
+                key_data=private_key,
             )
+
+                ee.Initialize(
+                credentials,
+                project=cls.PROJECT_ID,
+            )
+
+        # ---------------------------------------------------
+        # Local development fallback
+        # ---------------------------------------------------
+
+            else:
+                ee.Initialize(project=cls.PROJECT_ID)
 
         except Exception as exc:
 
             raise RuntimeError(
-                "Failed to initialize Google Earth Engine."
-            ) from exc
+            f"Failed to initialize Google Earth Engine: {exc}"
+        ) from exc
 
     # ===================================================
     # Validation
