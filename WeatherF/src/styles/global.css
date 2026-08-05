@@ -1,0 +1,44 @@
+/* src/styles/global.css */
+
+:root {
+  /* Color Palette */
+  --bg-dark: #070a12;
+  --bg-card: rgba(15, 23, 42, 0.65);
+  --bg-card-hover: rgba(30, 41, 59, 0.75);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+
+  /* Glassmorphism Styles */
+  --glass-bg: rgba(13, 22, 41, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-glow: rgba(6, 182, 212, 0.3);
+  --glass-blur: blur(16px);
+
+  /* Neumorphic Dark Shadows */
+  --neu-flat: 6px 6px 14px #04060b, -6px -6px 14px #0a0e19;
+  --neu-pressed: inset 3px 3px 6px #04060b, inset -3px -3px 6px #0a0e19;
+  --neu-button: 4px 4px 10px #04060b, -2px -2px 8px rgba(255, 255, 255, 0.03);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}

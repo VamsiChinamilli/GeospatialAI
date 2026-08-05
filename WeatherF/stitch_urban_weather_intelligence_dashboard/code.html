@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UHI Copilot Engine | Mission Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;500;600;700&amp;family=Work+Sans:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration Verbatim from Thermal Synapse System -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "inverse-surface": "#2f312e",
+                "background": "#faf9f5",
+                "tertiary-container": "#735c3a",
+                "on-primary-fixed-variant": "#324e2a",
+                "on-primary-container": "#c2e4b4",
+                "on-tertiary-fixed": "#281801",
+                "primary-fixed-dim": "#afd0a1",
+                "on-surface-variant": "#434840",
+                "primary": "#334f2b",
+                "surface-container-highest": "#e3e2df",
+                "surface-container-low": "#f4f4f0",
+                "on-secondary-container": "#556474",
+                "secondary-container": "#d1e1f4",
+                "surface-tint": "#496640",
+                "primary-container": "#4a6741",
+                "on-tertiary-container": "#f6d6ac",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#f2f1ed",
+                "surface-container": "#efeeea",
+                "surface-container-high": "#e9e8e4",
+                "on-secondary-fixed": "#0d1d2a",
+                "surface-bright": "#faf9f5",
+                "surface-container-lowest": "#ffffff",
+                "surface": "#faf9f5",
+                "on-tertiary": "#ffffff",
+                "surface-variant": "#e3e2df",
+                "on-error": "#ffffff",
+                "on-secondary": "#ffffff",
+                "surface-dim": "#dbdad6",
+                "outline": "#73796f",
+                "outline-variant": "#c3c8bd",
+                "secondary-fixed": "#d4e4f6",
+                "tertiary": "#5a4425",
+                "on-tertiary-fixed-variant": "#584324",
+                "on-surface": "#1b1c1a",
+                "on-background": "#1b1c1a",
+                "tertiary-fixed": "#feddb3",
+                "inverse-primary": "#afd0a1",
+                "tertiary-fixed-dim": "#e1c299",
+                "on-primary-fixed": "#062104",
+                "secondary": "#50606f",
+                "primary-fixed": "#caecbc",
+                "error-container": "#ffdad6",
+                "error": "#ba1a1a",
+                "on-secondary-fixed-variant": "#394857",
+                "secondary-fixed-dim": "#b8c8da"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "unit": "4px",
+                "margin-mobile": "16px",
+                "max-width": "1440px",
+                "margin-desktop": "64px",
+                "gutter": "24px"
+            },
+            "fontFamily": {
+                "display-lg": ["Newsreader"],
+                "body-sm": ["Work Sans"],
+                "data-tabular": ["JetBrains Mono"],
+                "body-md": ["Work Sans"],
+                "headline-lg": ["Newsreader"],
+                "label-caps": ["JetBrains Mono"],
+                "headline-lg-mobile": ["Newsreader"]
+            },
+            "fontSize": {
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        :root {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+        .hud-grid {
+            background-image: 
+                linear-gradient(to right, rgba(74, 103, 65, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(74, 103, 65, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .global-spotlight {
+            background: radial-gradient(
+                1000px circle at var(--mouse-x) var(--mouse-y),
+                rgba(74, 103, 65, 0.04),
+                transparent 80%
+            );
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 103, 65, 0.1);
+        }
+        .spotlight-card {
+            position: relative;
+            background: #ffffff;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .spotlight-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                300px circle at var(--card-mouse-x, 0) var(--card-mouse-y, 0),
+                rgba(74, 103, 65, 0.08),
+                transparent 70%
+            );
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .spotlight-card:hover::before {
+            opacity: 1;
+        }
+        .pulse-dot::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background-color: #4a6741;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-ring 3s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.5); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-sm selection:bg-primary/20 min-h-screen overflow-x-hidden">
+<!-- Atmospheric Background -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<div class="hud-grid absolute inset-0"></div>
+<div class="global-spotlight absolute inset-0"></div>
+</div>
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-margin-desktop h-20 bg-surface-container-lowest/70 backdrop-blur-xl border-b border-outline-variant/30">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-primary/5 rounded-full border border-primary/10">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] tracking-[0.2em] text-primary">GEO-RESILIENCE MATRIX • V2.0</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-data-tabular text-[9px] text-outline uppercase tracking-wider">Node: Hyderabad_01_Active</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-4 font-label-caps text-[10px] text-outline">
+<span class="flex items-center gap-1">SYS: OPTIMAL</span>
+<span class="flex items-center gap-1">ENC: AES-256</span>
+</div>
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-pointer">settings</button>
+</div>
+</header>
+<main class="relative z-10 pt-36 pb-32 px-6 md:px-margin-desktop max-w-max-width mx-auto">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center mb-24">
+<div class="mb-10 flex items-center gap-3 bg-surface-container-high/60 px-6 py-2 rounded-full border border-outline-variant/40 backdrop-blur-md">
+<div class="w-2 h-2 rounded-full bg-primary pulse-dot relative"></div>
+<span class="font-label-caps text-[11px] text-primary tracking-[0.2em]">ENVIRONMENTAL STABILITY: NOMINAL</span>
+</div>
+<h1 class="font-display-lg text-4xl md:text-6xl max-w-4xl mb-10 leading-tight text-on-surface">
+            URBAN HEAT ISLAND<br/>
+<span class="italic text-primary font-medium">COPILOT ENGINE</span>
+</h1>
+<div class="flex flex-col items-center gap-4">
+<div class="flex items-center gap-6 text-outline font-data-tabular text-xs tracking-widest">
+<span class="flex items-center gap-2">LAT 17.3850° N</span>
+<span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+<span class="flex items-center gap-2">LON 78.4867° E</span>
+</div>
+<div class="h-[1px] w-64 bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent"></div>
+</div>
+</section>
+<!-- Interactive Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+<!-- Card 1 -->
+<div class="spotlight-card group p-10 rounded-xl glass-panel shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
+<div class="flex items-center justify-center w-14 h-14 rounded-full bg-secondary-container/30 border border-secondary-container mb-8 text-primary">
+<span class="material-symbols-outlined">map</span>
+</div>
+<h3 class="font-headline-lg text-xl mb-4 text-on-surface">Select Target Zone</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-8">
+                Isolate high-resolution urban grids for thermal profiling. Deploy multi-spectral imaging to identify heat accumulation clusters within metropolitan zones.
+            </p>
+<div class="flex items-center gap-2 text-primary font-label-caps text-[10px] tracking-widest">
+<span>GEO-TAGGING ACTIVE</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="spotlight-card group p-10 rounded-xl glass-panel shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
+<div class="flex items-center justify-center w-14 h-14 rounded-full bg-primary-container/20 border border-primary-container mb-8 text-primary">
+<span class="material-symbols-outlined">memory</span>
+</div>
+<h3 class="font-headline-lg text-xl mb-4 text-on-surface">Run U-Net Matrix</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-8">
+                Execute proprietary neural network architectures to segment impervious surfaces. Calculate NDVI indices in real-time with sub-meter precision.
+            </p>
+<div class="flex items-center gap-2 text-primary font-label-caps text-[10px] tracking-widest">
+<span>NEURAL SYNC: 98%</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="spotlight-card group p-10 rounded-xl glass-panel shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
+<div class="flex items-center justify-center w-14 h-14 rounded-full bg-tertiary-fixed/30 border border-tertiary-fixed mb-8 text-primary">
+<span class="material-symbols-outlined">forum</span>
+</div>
+<h3 class="font-headline-lg text-xl mb-4 text-on-surface">Agentic Synthesis</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-8">
+                Interface with AI-driven climate advisors to derive mitigation strategies. Receive automated policy recommendations based on synthesized metrics.
+            </p>
+<div class="flex items-center gap-2 text-primary font-label-caps text-[10px] tracking-widest">
+<span>ADVISORY LINK READY</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Map Visualization CTA -->
+<a class="block group relative w-full h-[500px] rounded-3xl overflow-hidden border border-outline-variant/30 shadow-2xl transition-all duration-700 hover:scale-[1.01]" href="#">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-[10000ms] group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDzWQX3gxh6rOzJ9EpAUEO82dd11MI5ABeA21moVy-zcRQu_0q2iOI688ljwHPzmNUxqUb2pooRUsIbU493eJ4wrYPQPw5ovI3tlVehtopuVTa6vhnN3IFoxsVQyQO7Vzfe8YZnIlm-lQt9yUEqW1Cewtx3ExfAS8BagO5rKcNVLt_tJaeD2e82IpvW6_heE-L0GHw2ie7S9f-bH59IE5rNTuLeh1LbuMrJN0oK1ieDf1cePu2YPaI')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/0 transition-colors duration-500"></div>
+</div>
+<div class="absolute inset-0 z-20 flex flex-col justify-end p-10 md:p-16">
+<div class="flex flex-col md:flex-row justify-between items-end gap-10">
+<div class="max-w-2xl">
+<span class="font-label-caps text-primary text-[10px] tracking-[0.4em] block mb-4">ACTIVE SENSOR NETWORK // HYD_SEC_04</span>
+<h4 class="font-headline-lg text-4xl text-on-surface mb-4">Metropolitan Heat Mapping</h4>
+<p class="text-on-surface-variant font-body-md text-lg">Detailed thermal analysis of heat absorption and retention across central corridors. Select a node to initiate deep analysis.</p>
+</div>
+<div class="relative">
+<div class="flex items-center gap-4 bg-primary px-8 py-5 rounded-full text-on-primary shadow-xl shadow-primary/20 group-hover:shadow-primary/40 group-hover:scale-105 transition-all duration-500">
+<span class="font-label-caps tracking-widest text-sm">LAUNCH ANALYSIS</span>
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Overlay Layer -->
+<div class="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-white/10 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
+<div class="w-32 h-32 rounded-full border-2 border-primary/30 flex items-center justify-center animate-ping"></div>
+</div>
+</a>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center py-5 bg-surface-container-lowest/80 backdrop-blur-2xl border-t border-outline-variant/20 md:hidden">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">language</span>
+<span class="text-[9px] font-label-caps">MAP</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-outline hover:text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+<span class="text-[9px] font-label-caps">INTEL</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-outline hover:text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">smart_toy</span>
+<span class="text-[9px] font-label-caps">COPILOT</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-outline hover:text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">account_tree</span>
+<span class="text-[9px] font-label-caps">FLOWS</span>
+</a>
+</nav>
+<script>
+    // Mouse tracking for background spotlight
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+        document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    // Per-card mouse tracking for soft inner glow
+    document.querySelectorAll('.spotlight-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--card-mouse-x', `${x}px`);
+            card.style.setProperty('--card-mouse-y', `${y}px`);
+        });
+    });
+
+    // Subtle Grid Parallax
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const grid = document.querySelector('.hud-grid');
+        grid.style.transform = `translateY(${scrolled * 0.05}px)`;
+    });
+</script>
+</body></html>
