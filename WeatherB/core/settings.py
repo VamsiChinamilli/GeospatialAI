@@ -26,13 +26,29 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(+e)8))i63#4^c&0$um7jh=s^xgyizjcv*589mcwnyvxi+&x&^'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
-CORS_ALLOW_ALL_ORIGINS = True
+
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+
+
+
 
 
 # Application definition
@@ -118,7 +134,7 @@ OPENROUTER_URL = os.getenv(
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-DATABASE_URL = "postgresql://neondb_owner:npg_SqTzDosWi74C@ep-autumn-forest-atfj0v4a-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # 2. Configure DATABASES
 DATABASES = {
