@@ -6,6 +6,15 @@ os.environ.setdefault(
 )
 
 from django.core.asgi import get_asgi_application
+from core_next.utils.model_loader import ModelLoader
+
+try:
+    print("🚀 Preloading AI models...")
+    ModelLoader.load_all()
+    print("✅ AI models preloaded.")
+except Exception as exc:
+    print(f"❌ Failed to preload AI models: {exc}")
+
 
 django_asgi_app = get_asgi_application()
 
