@@ -48,7 +48,7 @@ from core_next.utils.unet.model import UNet
 
 HF_REPO_ID = "naga-vamsi/weatherb-landcover-unet"
 
-HF_MODEL_FILENAME = "best_model.pth"
+HF_MODEL_FILENAME = "weights_only.pth"
 
 
 # =======================================================
