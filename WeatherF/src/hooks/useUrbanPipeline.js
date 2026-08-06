@@ -3,8 +3,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const API_BASE_URL = "https://geospatialai.onrender.com";
-const WS_BASE_URL = "wss://geospatialai.onrender.com";
+const API_BASE_URL = "http://127.0.0.1:8000/";
+const WS_BASE_URL = "ws://127.0.0.1:8000/ws/chat/";
 const LOCATION_STORAGE_KEY = "urban_location_";
 
 export function useUrbanPipeline({
