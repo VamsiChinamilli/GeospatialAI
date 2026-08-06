@@ -3,8 +3,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const API_BASE_URL = "http://127.0.0.1:8000/";
-const WS_BASE_URL = "ws://127.0.0.1:8000/ws/chat/";
+const API_BASE_URL = "https://geospatialai-b.onrender.com";
+const WS_BASE_URL = "wss://geospatialai-b.onrender.com";
 const LOCATION_STORAGE_KEY = "urban_location_";
 
 export function useUrbanPipeline({
@@ -236,16 +236,52 @@ async function fetchReverseGeocode(targetBBox, targetSessionId = null) {
 
       if (targetSessionId) {
 
-        localStorage.setItem(
-          `${LOCATION_STORAGE_KEY}${targetSessionId}`,
-          location
-        );
+  localStorage.setItem(
+    `${LOCATION_STORAGE_KEY}${targetSessionId}`,
+    location
+  );
 
-        console.log(
-          "💾 Saved location for session:",
-          targetSessionId
-        );
+  console.log(
+    "💾 Saved location for session:",
+    targetSessionId
+  );
+
+  // ------------------------------------------------------
+  // Persist location to backend for LLM context
+  // ------------------------------------------------------
+
+  try {
+
+    const saveResponse = await fetch(
+      `${API_BASE_URL}/api/chat/${targetSessionId}/location/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          location,
+        }),
       }
+    );
+
+    if (!saveResponse.ok) {
+      throw new Error(`Failed to save location (${saveResponse.status})`);
+    }
+
+    console.log(
+      "📡 Location persisted to backend:",
+      location
+    );
+
+  } catch (saveError) {
+
+    console.warn(
+      "⚠️ Failed to persist location:",
+      saveError
+    );
+  }
+}
 
       return location;
     }
@@ -448,7 +484,7 @@ useEffect(() => {
     try {
       const payload = JSON.parse(event.data);
 
-      console.log("📥 WebSocket:", payload);
+      {/*console.log("📥 WebSocket:", payload);*/}
 
       switch (payload.type) {
         case "connection":
@@ -611,6 +647,7 @@ useEffect(() => {
 
     socket.send(
       JSON.stringify({
+        session_id: sessionId,
         message,
       })
     );
